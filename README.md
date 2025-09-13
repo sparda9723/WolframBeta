@@ -2,8 +2,8 @@
 ## my math tool implementation based on: mathplotlib,wolfram,octave,geogebra
 
 <img width="400" height="400" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://github.com/user-attachments/assets/a6968313-bb12-4f6f-adeb-78ef98998d30" />
-[[license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[[made-with](https://img.shields.io/badge/made%20with-WebAssembly-blueviolet)](#)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![made-with](https://img.shields.io/badge/made%20with-WebAssembly-blueviolet)](#)
 
 Um **mini-CAS (Computer Algebra System)** estilo **GeoGebra / WolframAlpha**, mas feito em  
 **JavaScript + WebAssembly (c++)**.  
