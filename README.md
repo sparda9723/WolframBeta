@@ -43,5 +43,10 @@ Permite calcular, derivar, integrar, analisar funções e ainda desenhar gráfic
 plota, e analisa...
 
 ```
+## preview
+<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/8f3c6a52-5650-4411-91b8-4ca4f071fe91" />
+
+
+
 ---
 
