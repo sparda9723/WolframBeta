@@ -1,9 +1,9 @@
 # WolframBeta
 ## my math tool implementation based on: mathplotlib,wolfram,octave,geogebra
 
-<img width="400" height="400" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://github.com/user-attachments/assets/a6968313-bb12-4f6f-adeb-78ef98998d30" />
+<img width="400" height="400" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://github.com/user-attachments/assets/a6968313-bb12-4f6f-adeb-78ef98998d30" /><br>
 <img width="75" height="75" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://img.shields.io/badge/license-MIT-blue" />
-<img width="75" height="75" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://img.shields.io/badge/made%20with-WebAssembly-blueviolet" />
+<img width="125" height="125" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://img.shields.io/badge/made%20with-WebAssembly-blueviolet" />
 
 Um **mini-CAS (Computer Algebra System)** estilo **GeoGebra / WolframAlpha**, mas feito em  
 **JavaScript + WebAssembly (c++)**.  
