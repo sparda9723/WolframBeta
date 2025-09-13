@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 Wolfram Beta 3000 🔥</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background: #171717;
+      color: #fff;
+      padding: 12px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+      #plotArea {
+        flex: 1;            
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+      }
+
+      #plot {
+        width: 100%;     
+        height: 100%;     
+      }
+
+    #outputArea {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+    }
+
+    #history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      font-family: monospace;
+      border-bottom: 1px solid #ddd;
+      white-space: pre-wrap;
+    }
+
+    #analysis {
+      padding: 10px;
+      font-family: monospace;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    #controls {
+      display: flex;
+      padding: 8px;
+      background: #eee;
+      border-top: 2px solid #ddd;
+    }
+
+    #expr {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header>🔥 Wolfram Beta 3000 🔥</header>
+
+  <main>
+    <div id="plotArea">
+      <canvas id="plot" width="800" height="400"></canvas>
+    </div>
+
+    <div id="outputArea">
+      <div id="history">[resultados aparecerão aqui]</div>
+      <div id="analysis"></div>
+    </div>
+  </main>
+
+  <div id="controls">
+    <input id="expr" type="text" placeholder="Digite expressão ex: sin(x)^2 + cos(x)^2">
+    <button id="runBtn">Executar</button>
+  </div>
+
+  <script src="wasmLib.js"></script>
+  <script>
+    let DescartesInstance = null;
+
+      Descartes().then(mod => {
+        DescartesInstance = mod;
+        console.log("🔹 wasmlib carregado");
+      });
+      function sanitize(val) {
+        if (val === null || val === undefined) return null;
+        if (typeof val === "string") {
+          if (val.toLowerCase().includes("nan") || val.toLowerCase().includes("inf")) {
+            return null;
+          }
+          return val;
+        }
+        if (typeof val === "number" && (!isFinite(val) || isNaN(val))) {
+          return null;
+        }
+        return val;
+      }
+function runRepl() {
+  const exprRaw = document.getElementById("expr").value.trim();
+  if (!DescartesInstance || !exprRaw) return;
+
+  const canvas = document.getElementById("plot");
+  const ctx = canvas.getContext("2d");
+  const history = document.getElementById("history");
+  const analysisBox = document.getElementById("analysis");
+
+  const raw = DescartesInstance.repl(exprRaw);
+
+  history.innerHTML += `\n~[math]> ${exprRaw}`;
+  history.scrollTop = history.scrollHeight;
+
+  let parsed = null;
+try {
+  parsed = JSON.parse(raw);
+
+  if (typeof parsed !== "object" || !parsed.plot) {
+    history.innerHTML += `\n= ${parsed}`;
+    return;
+  }
+} catch {
+  if (raw.trim() !== "") {
+    history.innerHTML += `\n= ${raw}`;
+  } else {
+    history.innerHTML += `\n(indefinido)`;
+  }
+  return;
+}
+
+  let { plot: plotData, analysis } = parsed;
+
+  analysis.expr = exprRaw;
+
+  plotData = plotData.map(([x, y]) => [x, sanitize(y)]);
+  for (let key in analysis) {
+    analysis[key] = sanitize(analysis[key]);
+  }
+
+  drawPlot(ctx, canvas, plotData, analysis.domain);
+  renderAnalysis(analysis, analysisBox);
+}
+
+   function drawPlot(ctx, canvas, points, domain) {
+  const plotArea = document.getElementById("plotArea");
+  canvas.width = plotArea.clientWidth;
+  canvas.height = plotArea.clientHeight;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const [xMin, xMax] = domain;
+  const validPoints = points.filter(p => p[1] != null && isFinite(p[1]));
+  if (validPoints.length === 0) return;
+
+  const yMin = Math.min(...validPoints.map(p => p[1]));
+  const yMax = Math.max(...validPoints.map(p => p[1]));
+
+  const padding = 50;
+  const scaleX = (canvas.width - 2 * padding) / (xMax - xMin);
+  const scaleY = (canvas.height - 2 * padding) / (yMax - yMin);
+
+  function toCanvasX(x) {
+    return padding + (x - xMin) * scaleX;
+  }
+  function toCanvasY(y) {
+    return canvas.height - padding - (y - yMin) * scaleY;
+  }
+
+  ctx.strokeStyle = "#eee";
+  ctx.lineWidth = 1;
+  ctx.font = "12px monospace";
+  ctx.fillStyle = "#333";
+
+  const stepX = (xMax - xMin) / 10;
+  for (let x = Math.ceil(xMin); x <= xMax; x += stepX) {
+    const px = toCanvasX(x);
+    ctx.beginPath();
+    ctx.moveTo(px, toCanvasY(yMin));
+    ctx.lineTo(px, toCanvasY(yMax));
+    ctx.stroke();
+    ctx.fillText(x.toFixed(1), px + 2, toCanvasY(0) - 2);
+  }
+
+  const stepY = (yMax - yMin) / 10;
+  for (let y = Math.ceil(yMin); y <= yMax; y += stepY) {
+    const py = toCanvasY(y);
+    ctx.beginPath();
+    ctx.moveTo(toCanvasX(xMin), py);
+    ctx.lineTo(toCanvasX(xMax), py);
+    ctx.stroke();
+    ctx.fillText(y.toFixed(1), toCanvasX(0) + 5, py - 2);
+  }
+
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 1.5;
+
+  ctx.beginPath();
+  ctx.moveTo(toCanvasX(xMin), toCanvasY(0));
+  ctx.lineTo(toCanvasX(xMax), toCanvasY(0));
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(toCanvasX(0), toCanvasY(yMin));
+  ctx.lineTo(toCanvasX(0), toCanvasY(yMax));
+  ctx.stroke();
+
+  ctx.beginPath();
+  let penUp = true;
+  points.forEach(([x, y]) => {
+    if (y == null || !isFinite(y)) {
+      penUp = true;
+      return;
+    }
+    const px = toCanvasX(x);
+    const py = toCanvasY(y);
+    if (penUp) {
+      ctx.moveTo(px, py);
+      penUp = false;
+    } else {
+      ctx.lineTo(px, py);
+    }
+  });
+  ctx.strokeStyle = "#007bff";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+    function renderAnalysis(data, target) {
+      const yes = "✅";
+      const no = "❌";
+      let html = `📊 <strong>Análise</strong>\n\n`;
+      for (let key in data) {
+        let val = data[key];
+        if (typeof val === "boolean") val = val ? yes : no;
+        else if (typeof val === "number") val = isFinite(val) ? val.toFixed(6) : "indefinido";
+        else if (val === null) val = "indefinido";
+        html += `🔸 <strong>${key}</strong>: ${val}\n`;
+      }
+      target.innerHTML = `<pre>${html}</pre>`;
+    }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("expr").addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          runRepl();
+        }
+      });
+      document.getElementById("runBtn").addEventListener("click", runRepl);
+    });
+  </script>
+</body>
+</html>
