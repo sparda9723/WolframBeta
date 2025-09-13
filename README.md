@@ -44,7 +44,8 @@ plota, e analisa...
 
 ```
 ## preview
-<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/8f3c6a52-5650-4411-91b8-4ca4f071fe91" />
+<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/8f3c6a52-5650-4411-91b8-4ca4f071fe91" /> <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/0dedc293-3b1b-47c2-a6f2-3fe0f34cbc14" />
+
 
 
 
