@@ -1,7 +1,7 @@
 # WolframBeta
 ## my math tool implementation based on: mathplotlib,wolfram,octave,geogebra
 
-<img width="1024" height="1024" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://github.com/user-attachments/assets/178c968a-5867-4118-b4fb-a39157db03cb" />
+<img width="1024" height="1024" alt="62e424c4-51d6-4d3f-8e17-13bb5c98386a" src="https://github.com/user-attachments/assets/a6968313-bb12-4f6f-adeb-78ef98998d30" />
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![made-with](https://img.shields.io/badge/made%20with-WebAssembly-blueviolet)](#)
 
